@@ -1,0 +1,167 @@
+.container
+	h3 Service
+	if this.service
+		Context(target=this.service)
+			.form-horizontal
+				h4 Kunde
+				Binding(name="tenantName")
+					FormGroup(label="Name" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantAddress")
+					FormGroup(label="Adresse" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="textarea")
+				Binding(name="tenantPhone")
+					FormGroup(label="Telefon" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantEmail")
+					FormGroup(label="E-Mail" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				h4 Fahrzeug
+				Binding(name="carBrand")
+					FormGroup(label="Marke" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carType")
+					FormGroup(label="Typ" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carColor")
+					FormGroup(label="Farbe" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carChassisNumber")
+					FormGroup(label="Chassis-Nummer" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carTypeCertificateNumber")
+					FormGroup(label="Typenschein-Nummer" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carLicencePlate")
+					FormGroup(label="Nummernschild" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				
+				h4 Dienstleistung
+				Binding(name="date")
+					FormGroup(label="Datum" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				Binding(name="notes")
+					FormGroup(label="Bemerkungen" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="textarea")
+				.form-group
+					label.control-label.col-sm-2 Leistungen					
+					.col-sm-10
+						table.table.table-striped
+							tbody
+								each item,i in this.service.services
+									Context(name="services")
+										Context(name=i)
+											tr
+												td
+													Binding(name="description")
+														Input(type="text")
+												td(style="width:100px")
+													Binding(name="count" onChange=this.recalculate.bind(this))
+														Number
+												td(style="width:100px")
+													Binding(name="rate" onChange=this.recalculate.bind(this))
+														Money
+												td(style="width:100px")
+													Binding(name="total")
+														Money(disabled=true)
+												td(style="width:50px")
+													.btn.btn-default(onClick=this.removeItem.bind(this,item))
+														.glyphicon.glyphicon-trash
+								tr
+									td(colSpan="3") Total
+									td
+										Binding(name="total")
+											Money(disabled=true)
+									td
+										.btn.btn-primary(onClick=this.addItem.bind(this))
+											.glyphicon.glyphicon-plus
+				Binding(name="dueDate")
+					FormGroup(label="Zahlbar bis" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				Binding(name="paymentDate")
+					FormGroup(label="Bezahlt am" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				.btn-toolbar.pull-right
+					if this.service._id
+						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
+					.btn.btn-primary(onClick=this.save.bind(this)) Speichern
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		if(p.service == "new"){
+			this.service = {
+				tenantName:"",
+				tenantAddress:"",
+				tenantPhone:"",
+				tenantEmail:"",
+
+				carBrand:"",
+				carType:"",
+				carChassisNumber:"",
+				carTypeCertificateNumber:"",
+				carColor: "",
+				carLicencePlate:"",
+
+				date: null,
+				services:[],
+				notes:"",
+				dueDate:null,
+				paymentDate:null
+			}
+		}else{
+			this.service = await client.getService(p.service);			
+		}
+		this.recalculate();
+	}
+	
+	addItem(){
+		this.service.services.push({
+			description:"",
+			count:1,
+			rate:null,
+			total:null
+		});
+		this.recalculate();
+	}
+	
+	removeItem(item){
+		this.service.services.splice(this.service.services.indexOf(item),1);
+		this.recalculate();
+	}
+	
+	recalculate(){
+		this.service.total = 0;
+		for(var s of this.service.services){
+			if(s.count >= 0 && s.rate != 0){
+				s.total = s.count*s.rate;
+			}else{
+				s.total = 0;
+			}
+			this.service.total += s.total;
+		}
+		this.forceUpdate();
+	}
+	
+	async save(){
+		if(this.service._id){
+			await client.updateService(this.service._id,this.service);
+		}else{
+			this.props.onCreate(await client.createService(this.service));
+		}
+	}
+	
+	async delete(){
+		await client.deleteService(this.props.service);
+		history.back();
+	}
+script.
+	var client = require("./client");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Number = require("./numberfield");
+	var Date = require("./datefield");
+	var Money = require("./moneyfield");

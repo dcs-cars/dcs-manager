@@ -1,0 +1,105 @@
+.container
+	h3 Occasion
+	if this.sale
+		Context(target=this.sale)
+			.form-horizontal
+				h4 Fahrzeug
+				Binding(name="carBrand")
+					FormGroup(label="Marke" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carType")
+					FormGroup(label="Typ" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carColor")
+					FormGroup(label="Farbe" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carChassisNumber")
+					FormGroup(label="Chassis-Nummer" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carTypeCertificateNumber")
+					FormGroup(label="Typenschein-Nummer" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="carKms")
+					FormGroup(label="Km-Stand" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Number
+				h4 Käufer
+				Binding(name="tenantName")
+					FormGroup(label="Name" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantAddress")
+					FormGroup(label="Adresse" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="textarea")
+				Binding(name="tenantPhone")
+					FormGroup(label="Telefon" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantEmail")
+					FormGroup(label="E-Mail" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				h4 Verkauf
+				Binding(name="date")
+					FormGroup(label="Datum" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				Binding(name="amount")
+					FormGroup(label="Preis" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Money
+				Binding(name="warranty")
+					FormGroup(label="Garantie" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="notes")
+					FormGroup(label="Bemerkungen" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="textarea")
+				.btn-toolbar.pull-right
+					if this.sale._id
+						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
+					.btn.btn-primary(onClick=this.save.bind(this)) Speichern
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		if(p.sale == "new"){
+			this.sale = {
+				tenantName:"",
+				tenantAddress:"",
+				tenantPhone:"",
+				tenantEmail:"",
+
+				carBrand:"",
+				carType:"",
+				carChassisNumber:"",
+				carTypeCertificateNumber:"",
+				carColor: "",
+				carKms: null,
+
+				notes:"",
+				date: null,
+				amount: null,
+				warranty: ""
+			}
+		}else{
+			this.sale = await client.getSale(p.sale);
+			this.forceUpdate();
+		}
+	}
+	
+	async save(){
+		if(this.sale._id){
+			await client.updateSale(this.sale._id,this.sale);
+		}else{
+			this.props.onCreate(await client.createSale(this.sale));
+		}
+	}
+	
+	async delete(){
+		await client.deleteSale(this.props.sale);
+		history.back();
+	}
+script.
+	var client = require("./client");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Number = require("./numberfield");
+	var Date = require("./datefield");
+	var Money = require("./moneyfield");

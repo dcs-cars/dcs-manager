@@ -1,0 +1,57 @@
+.container
+	.btn-toolbar.pull-right
+		.btn.btn-primary(onClick=this.props.onSelect.bind(this,"new")) Neu
+	h3 Werkstatt
+	Context(target=this.search)
+		.row
+			.col-sm-6.form-horizontal
+				Binding(name="tenant")
+					FormGroup(label="Kunde" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+				Binding(name="car")
+					FormGroup(label="Fahrzeug" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+			.col-sm-6.form-horizontal
+				Binding(name="dateFrom")
+					FormGroup(label="Datum von" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="dateTo")
+					FormGroup(label="Datum bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+	table.table.table-striped.table-hover
+		thead
+			tr
+				th Datum
+				th Kunde
+				th Fahrzeug
+				th Nummernschild
+				th Betrag
+				th Zahlbar bis
+		tbody
+			each service in this.services
+				tr(onClick=this.props.onSelect.bind(this,service._id) className=service.paymentDate==null&&service.dueDate!=null&&convert.toDate(service.dueDate).isBefore(moment())?"danger":"")
+					td= service.date?convert.toDate(service.date).format("L"):""
+					td= service.tenantName
+					td= service.carBrand+" "+service.carType+" ("+service.carColor+")"
+					td= service.carLicencePlate
+					td= money.format(service.total)
+					td= service.dueDate?convert.toDate(service.dueDate).format("L"):""
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.search = {};
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		this.services = await client.getServices();
+		this.forceUpdate();
+	}
+script.
+	var client = require("./client");
+	var convert = require("./dayConvert");
+	var money = require("./money");
+	var moment = require("moment");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Date = require("./datefield");

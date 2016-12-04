@@ -1,0 +1,29 @@
+.container
+	.btn-toolbar.pull-right
+		.btn.btn-primary(onClick=this.props.onSelect.bind(this,"new")) Neu
+	h3 Occasionen
+	table.table.table-striped.table-hover
+		thead
+			tr
+				th Marke
+				th Typ
+				th Farbe
+				th Km-Stand
+		tbody
+			each sale in this.sales
+				tr(onClick=this.props.onSelect.bind(this,sale._id))
+					td= sale.carBrand
+					td= sale.carType
+					td= sale.carColor
+					td= sale.carKms
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		this.sales = await client.getSales();
+		this.forceUpdate();
+	}
+script.
+	var client = require("./client");
