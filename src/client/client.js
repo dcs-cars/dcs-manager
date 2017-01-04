@@ -35,8 +35,15 @@ class Client{
 		await this.getResponse(url,opts);
 	}
 
-	async getSales(){
-		return await this.getJson("/api/sales");
+	async getSales(opts){
+        var params = new URLSearchParams();
+		if(opts.tenant) params.append("tenant",opts.tenant);
+		if(opts.car) params.append("car",opts.car);
+		if(opts.from !== null) params.append("from",opts.from);
+		if(opts.to !== null) params.append("to",opts.to);
+		if(opts.kmFrom !== null) params.append("kmFrom",opts.kmFrom);
+		if(opts.kmTo !== null) params.append("kmTo",opts.kmTo);
+		return await this.getJson("/api/sales?"+params.toString());
 	}
 
 	async createSale(data){

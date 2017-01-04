@@ -2,6 +2,28 @@
 	.btn-toolbar.pull-right
 		.btn.btn-primary(onClick=this.props.onSelect.bind(this,"new")) Neu
 	h3 Occasionen
+	Context(target=this.search onChange=this.update.bind(this))
+		.row
+			.col-sm-6.form-horizontal
+				Binding(name="car")
+					FormGroup(label="Fahrzeug" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+				Binding(name="tenant")
+					FormGroup(label="Käufer" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+			.col-sm-6.form-horizontal
+				Binding(name="from")
+					FormGroup(label="Verkaufsdatum von" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="to")
+					FormGroup(label="Verkaufsdatum bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="kmFrom")
+					FormGroup(label="Kilometer von" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						NumberField
+				Binding(name="kmTo")
+					FormGroup(label="Kilometer bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						NumberField
 	table.table.table-striped.table-hover
 		thead
 			tr
@@ -22,8 +44,33 @@ script(section="body").
 		this.componentWillReceiveProps(p);
 	}
 	async componentWillReceiveProps(p){
-		this.sales = await client.getSales();
+		this.search = query.parse(p.query);
+		this.sales = await client.getSales(this.search);
 		this.forceUpdate();
+	}
+	
+	update(){
+		console.log(this.search)
+		this.props.location.replace("",query.serialize(this.search));
 	}
 script.
 	var client = require("./client");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Date = require("./datefield");
+	var NumberField = require("./numberfield")
+	var QueryUtil = require("./queryutil");
+	var {Router} = require("react-route-system");
+	
+	Component.router = new Router()
+		.add("search","",null,{tenant:true,car:true,from:true,to:true, kmFrom: true, kmTo: true})
+			
+	var query = new QueryUtil({
+		tenant: "",
+		car: "",
+		from: Number,
+		to: Number,
+		kmFrom: Number,
+		kmTo: Number
+	});
