@@ -18,6 +18,9 @@
 				Binding(name="dateTo")
 					FormGroup(label="Datum bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
 						Date
+	if this.services
+		List(ref="list" itemsRenderer=this.renderTable.bind(this,null,null) itemRenderer=this.renderItem.bind(this) length=this.services.length type="variable" itemSizeEstimator=()=>39)
+mixin renderTable(items,ref)
 	table.table.table-striped.table-hover
 		thead
 			tr
@@ -27,15 +30,16 @@
 				th Nummernschild
 				th Betrag
 				th Zahlbar bis
-		tbody
-			each service in this.services
-				tr(onClick=this.props.onSelect.bind(this,service._id) className=service.paymentDate==null&&service.dueDate!=null&&convert.toDate(service.dueDate).isBefore(moment())?"danger":"")
-					td= service.date?convert.toDate(service.date).format("L"):""
-					td= service.tenantName
-					td= service.carBrand+" "+service.carType+" ("+service.carColor+")"
-					td= service.carLicencePlate
-					td= money.format(service.total)
-					td= service.dueDate?convert.toDate(service.dueDate).format("L"):""
+		tbody(ref=ref)
+			= items
+mixin renderItemMixin(service,key)
+	tr(key=key onClick=this.props.onSelect.bind(this,service._id) className=service.paymentDate==null&&service.dueDate!=null&&convert.toDate(service.dueDate).isBefore(moment())?"danger":"")
+		td= service.date?convert.toDate(service.date).format("L"):""
+		td= service.tenantName
+		td= service.carBrand+" "+service.carType+" ("+service.carColor+")"
+		td= service.carLicencePlate
+		td= money.format(service.total)
+		td= service.dueDate?convert.toDate(service.dueDate).format("L"):""
 script(section="body").
 	constructor(p,c){
 		super(p,c);
@@ -46,6 +50,17 @@ script(section="body").
 		this.services = await client.getServices();
 		this.forceUpdate();
 	}
+	renderItem(index,key){
+		return this.renderItemMixin(null,null,this.services[index],key)
+	}
+	componentWillUnmount(){
+		Component.index = this.refs.list.getVisibleRange()[0];
+	}
+	componentDidUpdate(){
+		if(Component.index && this.refs.list){
+			setTimeout(()=>this.refs.list.scrollTo(Component.index));
+		} 
+	}
 script.
 	var client = require("./client");
 	var convert = require("./dayConvert");
@@ -55,3 +70,4 @@ script.
 	var FormGroup = require("./formgroup");
 	var Input = require("./input");
 	var Date = require("./datefield");
+	var List = require("react-list");
