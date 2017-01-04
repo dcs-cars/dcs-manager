@@ -15,6 +15,10 @@
 				h4 404 - Seite nicht gefunden
 		else
 			case route.name
+				when "rentals"
+					= route.render({onSelect:this.showRental.bind(this,false)})
+				when "rental"
+					= route.render({rental:this.props.params.rental,onCreate:this.showRental.bind(this,true)})
 				when "sales"
 					= route.render({onSelect:this.showSale.bind(this,false)})
 				when "sale"
@@ -26,6 +30,9 @@
 script(section="body").
 	goTo(path,replace,e){
 		this.props.location[replace?"replace":"push"](path);
+	}
+	showRental(replace,rental){
+		this.goTo("/properties/"+rental,replace);
 	}
 	showSale(replace,sale){
 		this.goTo("/cars/"+sale,replace);
@@ -42,6 +49,8 @@ script.
 	var {Router} = require("react-route-system");
 	
 	Component.router = new Router()
+		.add("rentals","/properties",require("./rentals"))
+		.add("rental","/property/:rental",require("./rental"))
 		.add("sales","/cars",require("./sales"))
 		.add("sale","/cars/:sale",require("./sale"))
 		.add("services","/workshop",require("./services"))

@@ -86,5 +86,31 @@ class Client{
 	async deleteService(service){
 		await this.execute("/api/services/"+service,{method:"DELETE"});
 	}
+    async getRentals(opts){
+        var params = new URLSearchParams();
+		if(opts.property) params.append("property",opts.property);
+        if(opts.tenant) params.append("tenant",opts.tenant);
+		if(opts.startFrom !== null) params.append("startFrom",opts.startFrom);
+		if(opts.startTo !== null) params.append("startTo",opts.startTo);
+		if(opts.endFrom !== null) params.append("endFrom",opts.endFrom);
+		if(opts.endTo !== null) params.append("endTo",opts.endTo);
+        return await this.getJson("/api/rentals?"+params.toString());
+    }
+
+    async createRental(data){
+        return await this.getText("/api/rentals",{method:"POST",jsonBody:data})
+    }
+
+    async getRental(rental){
+        return await this.getJson("/api/rentals/"+rental);
+    }
+
+    async updateRental(rental,data){
+        await this.execute("/api/rentals/"+rental,{method:"PATCH",jsonBody:data});
+    }
+
+    async deleteRental(rental){
+        await this.execute("/api/rentals/"+rental,{method:"DELETE"});
+    }
 }
 module.exports = new Client();

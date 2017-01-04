@@ -1,0 +1,76 @@
+.container
+	.btn-toolbar.pull-right
+		.btn.btn-primary(onClick=this.props.onSelect.bind(this,"new")) Neu
+	h3 Immobilien
+	Context(target=this.search onChange=this.update.bind(this))
+		.row
+			.col-sm-6.form-horizontal
+				Binding(name="property")
+					FormGroup(label="Immobilie" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+				Binding(name="tenant")
+					FormGroup(label="Mieter" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Input(type="text")
+			.col-sm-6.form-horizontal
+				Binding(name="startFrom")
+					FormGroup(label="Mietbeginn von" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="startTo")
+					FormGroup(label="Mietbeginn bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="endFrom")
+					FormGroup(label="Mietende von" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+				Binding(name="endTo")
+					FormGroup(label="Mietende bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
+						Date
+	table.table.table-striped.table-hover
+		thead
+			tr
+				th Immobilie
+				th Mieter
+				th Mietbeginn
+				th Miete
+		tbody
+			each rental in this.rental
+				tr(onClick=this.props.onSelect.bind(this,rental._id))
+					td= rental.propertyName
+					td= rental.tenantName
+					td= rental.start?convert.toDate(rental.start).format("L"):""
+					td= money.format(rental.amount)
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		this.search = query.parse(p.query);
+		this.sales = await client.getRentals(this.search);
+		this.forceUpdate();
+	}
+	
+	update(){
+		this.props.location.replace("",query.serialize(this.search));
+	}
+script.
+	var client = require("./client");
+	var money = require("./money");
+	var moment = require("moment");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Date = require("./datefield");
+	var QueryUtil = require("./queryutil");
+	var {Router} = require("react-route-system");
+	
+	Component.router = new Router()
+		.add("search","",null,{property:true,tenant:true,startFrom:true,startTo:true, endFrom: true, endTo: true})
+			
+	var query = new QueryUtil({
+		property: "",
+		tenant: "",
+		startFrom: Number,
+		startTo: Number,
+		endFrom: Number,
+		endTo: Number
+	});
