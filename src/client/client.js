@@ -54,8 +54,14 @@ class Client{
 	async deleteSale(sale){
 		await this.execute("/api/sales/"+sale,{method:"DELETE"});
 	}
-	async getServices(){
-		return await this.getJson("/api/services");
+	async getServices(opts){
+        var params = new URLSearchParams();
+		if(opts.tenant) params.append("tenant",opts.tenant);
+		if(opts.car) params.append("car",opts.car);
+		if(opts.from !== null) params.append("from",opts.from);
+		if(opts.to !== null) params.append("to",opts.to);
+		if(opts.paid !== null) params.append("paid",opts.paid);
+		return await this.getJson("/api/services?"+params.toString());
 	}
 
 	async createService(data){

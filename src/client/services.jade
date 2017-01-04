@@ -2,7 +2,7 @@
 	.btn-toolbar.pull-right
 		.btn.btn-primary(onClick=this.props.onSelect.bind(this,"new")) Neu
 	h3 Werkstatt
-	Context(target=this.search)
+	Context(target=this.search onChange=this.update.bind(this))
 		.row
 			.col-sm-6.form-horizontal
 				Binding(name="tenant")
@@ -11,11 +11,18 @@
 				Binding(name="car")
 					FormGroup(label="Fahrzeug" labelClass="col-sm-4" wrapperClass="col-sm-8")
 						Input(type="text")
+				.form-gorup
+					label.control-label.col-sm-4 Bezahlte anzeigen
+					.col-sm-8
+						.checkbox
+							label
+								Binding(name="paid")
+									Input(type="checkbox")
 			.col-sm-6.form-horizontal
-				Binding(name="dateFrom")
+				Binding(name="from")
 					FormGroup(label="Datum von" labelClass="col-sm-4" wrapperClass="col-sm-8")
 						Date
-				Binding(name="dateTo")
+				Binding(name="to")
 					FormGroup(label="Datum bis" labelClass="col-sm-4" wrapperClass="col-sm-8")
 						Date
 	if this.services
@@ -43,12 +50,15 @@ mixin renderItemMixin(service,key)
 script(section="body").
 	constructor(p,c){
 		super(p,c);
-		this.search = {};
 		this.componentWillReceiveProps(p);
 	}
 	async componentWillReceiveProps(p){
-		this.services = await client.getServices();
+		this.search = query.parse(p.query);
+		this.services = await client.getServices(this.search);
 		this.forceUpdate();
+	}
+	async update(){
+		this.props.location.replace("",query.serialize(this.search));
 	}
 	renderItem(index,key){
 		return this.renderItemMixin(null,null,this.services[index],key)
@@ -71,3 +81,16 @@ script.
 	var Input = require("./input");
 	var Date = require("./datefield");
 	var List = require("react-list");
+	var QueryUtil = require("./queryutil");
+	var {Router} = require("react-route-system");
+	
+	Component.router = new Router()
+		.add("search","",null,{tenant:true,car:true,from:true,to:true,paid:true})
+			
+	var query = new QueryUtil({
+		tenant: "",
+		car: "",
+		from: Number,
+		to: Number,
+		paid: false
+	});
