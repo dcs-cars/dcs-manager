@@ -1,2 +1,83 @@
 .container
 	h3 Immobilie
+	if this.rental
+		Context(target=this.rental)
+			.form-horizontal
+				h4 Immobilie
+				Binding(name="propertyName")
+					FormGroup(label="Name" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				h4 Mieter
+				Binding(name="tenantName")
+					FormGroup(label="Name" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantAddress")
+					FormGroup(label="Adresse" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="textarea")
+				Binding(name="tenantPhone")
+					FormGroup(label="Telefon" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				Binding(name="tenantEmail")
+					FormGroup(label="E-Mail" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Input(type="text")
+				h4 Miete
+				Binding(name="start")
+					FormGroup(label="Mietbeginn" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				Binding(name="end")
+					FormGroup(label="Mietende" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Date
+				Binding(name="amount")
+					FormGroup(label="Miete" labelClass="col-sm-2" wrapperClass="col-sm-10")
+						Money
+				.btn-toolbar.pull-right
+					if this.rental._id
+						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
+					.btn.btn-primary(onClick=this.save.bind(this)) Speichern
+script(section="body").
+	constructor(p,c){
+		super(p,c);
+		this.componentWillReceiveProps(p);
+	}
+	async componentWillReceiveProps(p){
+		if(p.rental == "new"){
+			this.rental = {			
+				propertyName:"",
+				
+				tenantName:"",
+				tenantAddress:"",
+				tenantPhone:"",
+				tenantEmail:"",
+				
+				start: null,
+				end: null,
+				amount: null,
+				
+				payments:[]
+			}
+		}else{
+			this.rental = await client.getRental(p.rental);
+			this.forceUpdate();
+		}
+	}
+	
+	async save(){
+		if(this.rental._id){
+			await client.updateRental(this.rental._id,this.rental);
+		}else{
+			this.props.onCreate(await client.createRental(this.rental));
+		}
+	}
+	
+	async delete(){
+		await client.deleteRental(this.props.rental);
+		history.back();
+	}
+script.
+	var client = require("./client");
+	var {Context,Binding} = require("react-bicon");
+	var FormGroup = require("./formgroup");
+	var Input = require("./input");
+	var Number = require("./numberfield");
+	var Date = require("./datefield");
+	var Money = require("./moneyfield");

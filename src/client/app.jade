@@ -50,7 +50,7 @@ script.
 	
 	Component.router = new Router()
 		.add("rentals","/properties",require("./rentals"))
-		.add("rental","/property/:rental",require("./rental"))
+		.add("rental","/properties/:rental",require("./rental"))
 		.add("sales","/cars",require("./sales"))
 		.add("sale","/cars/:sale",require("./sale"))
 		.add("services","/workshop",require("./services"))

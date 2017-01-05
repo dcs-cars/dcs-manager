@@ -32,7 +32,7 @@
 				th Mietbeginn
 				th Miete
 		tbody
-			each rental in this.rental
+			each rental in this.rentals
 				tr(onClick=this.props.onSelect.bind(this,rental._id))
 					td= rental.propertyName
 					td= rental.tenantName
@@ -45,7 +45,7 @@ script(section="body").
 	}
 	async componentWillReceiveProps(p){
 		this.search = query.parse(p.query);
-		this.sales = await client.getRentals(this.search);
+		this.rentals = await client.getRentals(this.search);
 		this.forceUpdate();
 	}
 	
@@ -56,6 +56,7 @@ script.
 	var client = require("./client");
 	var money = require("./money");
 	var moment = require("moment");
+	var convert = require("./dayConvert");
 	var {Context,Binding} = require("react-bicon");
 	var FormGroup = require("./formgroup");
 	var Input = require("./input");
