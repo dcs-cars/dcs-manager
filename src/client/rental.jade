@@ -30,6 +30,17 @@
 				Binding(name="amount")
 					FormGroup(label="Miete" labelClass="col-sm-2" wrapperClass="col-sm-10")
 						Money
+				h4 Monate
+				table.table.table-striped
+					thead
+						tr
+							th Monat
+							th Bezahlt am
+					tbody
+						each month in this.getMonths()
+							tr
+								td= month.format("MMMM YYYY")
+								td
 				.btn-toolbar.pull-right
 					if this.rental._id
 						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
@@ -61,6 +72,19 @@ script(section="body").
 		}
 	}
 	
+	getMonths(){
+		var months = [];
+		if(!this.rental.start) return months;
+		var start = convert.toDate(this.rental.start).startOf("month");
+		var end = this.rental.end?convert.toDate(this.rental.end).startOf("month"):moment.utc().startOf("month");
+		
+		do {
+			months.push(start.clone());
+			start = start.add(1,"month")
+		}while(start.isBefore(end))
+		return months;		
+	}
+	
 	async save(){
 		if(this.rental._id){
 			await client.updateRental(this.rental._id,this.rental);
@@ -81,3 +105,5 @@ script.
 	var Number = require("./numberfield");
 	var Date = require("./datefield");
 	var Money = require("./moneyfield");
+	var convert = require("./dayConvert");
+	var moment = require("moment");
