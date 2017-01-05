@@ -37,10 +37,14 @@
 							th Monat
 							th Bezahlt am
 					tbody
-						each month in this.getMonths()
-							tr
-								td= month.format("MMMM YYYY")
-								td
+						each month,i in this.rental.payments
+							Context(name="payments")
+								Context(name=i)
+									tr(className=month.paymentDate?"":"danger")
+										td= moment(month.month,"YYYY.MM").format("MMMM YYYY")
+										td
+											Binding(name="paymentDate" onChange=this.forceUpdate.bind(this,undefined))
+												Date
 				.btn-toolbar.pull-right
 					if this.rental._id
 						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
@@ -66,23 +70,16 @@ script(section="body").
 				
 				payments:[]
 			}
+			fixMonths(this.rental);
 		}else{
 			this.rental = await client.getRental(p.rental);
+			fixMonths(this.rental);
 			this.forceUpdate();
 		}
 	}
 	
-	getMonths(){
-		var months = [];
-		if(!this.rental.start) return months;
-		var start = convert.toDate(this.rental.start).startOf("month");
-		var end = this.rental.end?convert.toDate(this.rental.end).startOf("month"):moment.utc().startOf("month");
-		
-		do {
-			months.push(start.clone());
-			start = start.add(1,"month")
-		}while(start.isBefore(end))
-		return months;		
+	getMonth(month){
+		return this.rental.payments.filter(payment=>payment.month == month)[0];
 	}
 	
 	async save(){
@@ -105,5 +102,6 @@ script.
 	var Number = require("./numberfield");
 	var Date = require("./datefield");
 	var Money = require("./moneyfield");
-	var convert = require("./dayConvert");
+	var convert = require("../shared/dayConvert");
+	var fixMonths = require("../shared/fixMonths");
 	var moment = require("moment");

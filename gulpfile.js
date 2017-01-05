@@ -42,7 +42,7 @@ gulp.task("buildClient",["compile"],function(cb){
 	if(!fs.existsSync("./public")) fs.mkdirSync("./public");
 	if(!fs.existsSync("./public/bootstrap")) fs.symlinkSync("../node_modules/bootstrap/dist","./public/bootstrap","dir");
 	if(!fs.existsSync("./public/react-widgets")) fs.symlinkSync("../node_modules/react-widgets/dist","./public/react-widgets","dir");
-	var bundle = browserify({basedir:path.resolve(__dirname,"../"),cache:{},packageCache:{}});
+	var bundle = browserify({cache:{},packageCache:{}});
 	cacheApi(bundle,{cacheFile:"./cache.json"})
 	bundle.add(require.resolve("./lib/client"));
 	bundle.bundle((err,build)=>{

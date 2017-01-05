@@ -1,7 +1,7 @@
 var react = require("react");
 var DateTimePicker = require("./datetimefield");
 var moment = require("moment");
-var convert = require("./dayConvert");
+var convert = require("../shared/dayConvert");
 
 module.exports = class Component extends react.Component{
 	render(){

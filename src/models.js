@@ -16,7 +16,7 @@ module.exports = function(db){
 		end:Number,
 		amount: Number,
 		payments:[{
-			month: Number,
+			month: String,
 			paymentDate: Number
 		}]
 	});
