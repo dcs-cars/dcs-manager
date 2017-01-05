@@ -15,6 +15,8 @@
 				h4 404 - Seite nicht gefunden
 		else
 			case route.name
+				when "home"
+					- setTimeout(()=>this.props.location.replace("/workshop"))
 				when "rentals"
 					= route.render({onSelect:this.showRental.bind(this,false)})
 				when "rental"
@@ -49,6 +51,7 @@ script.
 	var {Router} = require("react-route-system");
 	
 	Component.router = new Router()
+		.add("home","")
 		.add("rentals","/properties",require("./rentals"))
 		.add("rental","/properties/:rental",require("./rental"))
 		.add("sales","/cars",require("./sales"))
