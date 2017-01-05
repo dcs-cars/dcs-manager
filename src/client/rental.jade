@@ -21,10 +21,10 @@
 					FormGroup(label="E-Mail" labelClass="col-sm-2" wrapperClass="col-sm-10")
 						Input(type="text")
 				h4 Miete
-				Binding(name="start")
+				Binding(name="start" onChange=this.fix.bind(this))
 					FormGroup(label="Mietbeginn" labelClass="col-sm-2" wrapperClass="col-sm-10")
 						Date
-				Binding(name="end")
+				Binding(name="end" onChange=this.fix.bind(this))
 					FormGroup(label="Mietende" labelClass="col-sm-2" wrapperClass="col-sm-10")
 						Date
 				Binding(name="amount")
@@ -78,8 +78,9 @@ script(section="body").
 		}
 	}
 	
-	getMonth(month){
-		return this.rental.payments.filter(payment=>payment.month == month)[0];
+	fix(){
+		fixMonths(this.rental);
+		this.forceUpdate();
 	}
 	
 	async save(){
