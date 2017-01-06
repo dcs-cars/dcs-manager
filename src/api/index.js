@@ -5,5 +5,6 @@ var compose = require("koa-compose");
 module.exports = compose([
 	mount("/rentals",require("./rentals")),
 	mount("/sales",require("./sales")),
-	mount("/services",require("./services"))
+	mount("/services",require("./services")),
+	mount("/templates",require("./templates"))
 ]);

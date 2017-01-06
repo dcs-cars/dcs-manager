@@ -112,5 +112,9 @@ class Client{
     async deleteRental(rental){
         await this.execute("/api/rentals/"+rental,{method:"DELETE"});
     }
+
+	async renderTemplate(template,data){
+		return await(await this.getResponse("/api/templates/"+template+"/render",{method:"POST",jsonBody:data})).blob()
+	}
 }
 module.exports = new Client();
