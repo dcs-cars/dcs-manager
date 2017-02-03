@@ -11,11 +11,12 @@ var babel = require("gulp-babel");
 var es = require("event-stream");
 var cache = new (require("gulp-file-cache"))();
 var cacheApi = require("browserify-cache-api");
+var extra = require("fs-extra");
 
 gulp.task("clean",function(){
 	rimraf("./lib");
 	rimraf("./public");
-	fs.unlinkSync("./gulp-cache");
+	fs.unlinkSync("./.gulp-cache");
 	fs.unlinkSync("./cache.json");
 });
 
@@ -40,8 +41,8 @@ gulp.task("compile",function(){
 
 gulp.task("buildClient",["compile"],function(cb){
 	if(!fs.existsSync("./public")) fs.mkdirSync("./public");
-	if(!fs.existsSync("./public/bootstrap")) fs.symlinkSync("../node_modules/bootstrap/dist","./public/bootstrap","dir");
-	if(!fs.existsSync("./public/react-widgets")) fs.symlinkSync("../node_modules/react-widgets/dist","./public/react-widgets","dir");
+	if(!fs.existsSync("./public/bootstrap")) extra.copySync("./node_modules/bootstrap/dist","./public/bootstrap");
+	if(!fs.existsSync("./public/react-widgets")) extra.copySync("./node_modules/react-widgets/dist","./public/react-widgets");
 	var bundle = browserify({cache:{},packageCache:{}});
 	cacheApi(bundle,{cacheFile:"./cache.json"})
 	bundle.add(require.resolve("./lib/client"));

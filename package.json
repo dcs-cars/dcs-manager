@@ -12,6 +12,7 @@
     "babel-polyfill": "^6.13.0",
     "bootstrap": "^3.3.5",
     "co-body": "^4.2.0",
+    "fs-extra": "^2.0.0",
     "jade2react": "github:vancoding/jade2react",
     "jszip": "^2.6.1",
     "koa": "^2.0.0",
