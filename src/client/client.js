@@ -113,8 +113,8 @@ class Client{
         await this.execute("/api/rentals/"+rental,{method:"DELETE"});
     }
 
-	async renderTemplate(template,data){
-		return await(await this.getResponse("/api/templates/"+template+"/render",{method:"POST",jsonBody:data})).blob()
+	async uploadTemplate(id,data){
+		await this.execute("/api/templates/"+id,{method:"PUT",body:data})
 	}
 }
 module.exports = new Client();

@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var Mixed = mongoose.Schema.Types.Mixed;
+var GridFs = require("mongoose-gridfs");
 
 module.exports = function(db){
 	db.Rental = db.model("rentals",{
@@ -67,4 +68,13 @@ module.exports = function(db){
 		paymentDate: Number,
 		notes: String
 	})
+
+	db.TemplateEntry = db.model("templates.files",{
+		filename: String
+	});
+
+	db.Template = GridFs({
+		collection:"templates",
+		model:"Template"
+	}).model;
 }

@@ -1,4 +1,4 @@
-.app
+.app(style="position:relative")
 	div(style="minHeight:100%;marginBottom:-60px;paddingBottom:60px;boxSizing:border-box")
 		Navbar
 			Header
@@ -29,6 +29,8 @@
 					= route.render({onSelect:this.showService.bind(this,false)})
 				when "service"
 					= route.render({service:this.props.params.service,onCreate:this.showService.bind(this,true)})
+				when "templates"
+					= route.render({})
 script(section="body").
 	goTo(path,replace,e){
 		this.props.location[replace?"replace":"push"](path);
@@ -58,10 +60,12 @@ script.
 		.add("sale","/cars/:sale",require("./sale"))
 		.add("services","/workshop",require("./services"))
 		.add("service","/workshop/:service",require("./service"))
+		.add("templates","/templates",require("./templates"))
 		.add("404","*")
 	
 	var menu = {
 		"Immobilien":"/properties",
 		"Occasionen":"/cars",
-		"Werkstatt":"/workshop"
+		"Werkstatt":"/workshop",
+		"Vorlagen":"/templates"
 	}

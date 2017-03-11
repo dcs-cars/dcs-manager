@@ -6,5 +6,6 @@ module.exports = compose([
 	mount("/rentals",require("./rentals")),
 	mount("/sales",require("./sales")),
 	mount("/services",require("./services")),
-	mount("/templates",require("./templates"))
+	mount("/templates",require("./templates")),
+	mount("/documents",require("./documents"))
 ]);

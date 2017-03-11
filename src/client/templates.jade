@@ -1,0 +1,46 @@
+.container
+	h3 Vorlagen
+	table.table.table-striped.table-hover
+		thead
+			tr
+				th Name
+				th Aktionen
+		tbody
+			each name,id in templates
+				tr
+					td= name
+					td
+						.btn.btn-default(onClick=this.upload.bind(this,id))
+							.glyphicon.glyphicon-floppy-open
+						a.btn.btn-default(href="/api/templates/"+id target="_blank")
+							.glyphicon.glyphicon-floppy-save
+						.btn.btn-default(onClick=this.edit.bind(this,id))
+							.glyphicon.glyphicon-pencil
+	if this.editing
+		Editor(title="Document.docx" url=this.editing onClose=this.stopEdit.bind(this))
+script(section="body").
+	upload(id){
+		var file = document.createElement("input");
+		file.setAttribute("type","file");
+		file.onchange = async(e) => {
+			document.body.removeChild(file);
+			await client.uploadTemplate(id,e.target.files[0]);
+		}
+		document.body.appendChild(file);
+		file.click();
+	}
+	edit(id){
+		this.editing = "http://192.168.1.37/api/templates/"+id+"?username=dcs&password=1234";
+		this.forceUpdate();
+	}
+	stopEdit(){
+		delete this.editing;
+		this.forceUpdate();
+	}
+script.
+	var client = require("./client");
+	var Editor = require("./editor");
+	var templates = {
+		"service_invoie":"Werkstatt Rechnung",
+		"service_reminder":"Werkstatt Mahnung"
+	}

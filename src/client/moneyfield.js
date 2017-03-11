@@ -1,5 +1,5 @@
 var react = require("react");
-var money = require("./money");
+var money = require("../shared/money");
 var Input = require("./input");
 
 module.exports = class Component extends react.Component{

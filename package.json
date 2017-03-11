@@ -25,6 +25,7 @@
     "memoizejs": "^0.1.1",
     "moment": "~2.9.0",
     "mongoose": "^4.7.0",
+    "mongoose-gridfs": "^0.1.0",
     "react": "^15.0.2",
     "react-autosize-textarea": "^0.3.4",
     "react-bicon": "^1.0.0",
@@ -35,6 +36,10 @@
     "react-select": "^1.0.0-beta13",
     "react-textarea-autosize": "^4.0.1",
     "react-widgets": "^3.3.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "stream-to-promise": "^2.2.0",
+    "string-to-stream": "^1.1.0",
     "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
