@@ -84,7 +84,11 @@
 				.btn-toolbar.pull-right
 					if this.service._id
 						.btn.btn-danger(onClick=this.delete.bind(this)) Löschen
-					.btn.btn-default(onClick=this.renderTemplate.bind(this)) Generieren
+					if this.documentExists
+						.btn.btn-default(onClick=this.editDocx.bind(this)) DOCX bearbeiten
+						.btn.btn-default(onClick=this.deleteDocx.bind(this)) DOCX löschen
+					else
+						.btn.btn-default(onClick=this.renderTemplate.bind(this)) Generieren
 					.btn.btn-primary(onClick=this.save.bind(this)) Speichern
 	if this.editing
 		Editor(document=this.editing onClose=this.stopEditing.bind(this))
@@ -114,8 +118,10 @@ script(section="body").
 				dueDate:null,
 				paymentDate:null
 			}
+			this.documentExists = false;
 		}else{
-			this.service = await client.getService(p.service);			
+			this.service = await client.getService(p.service);		
+			this.documentExists = await client.getDocumentExists("services."+this.service._id+".invoice");	
 		}
 		this.recalculate();
 	}
@@ -186,7 +192,18 @@ script(section="body").
 		console.log(template.getZip())
 		docx = template.getZip().generate({type:"blob"});
 		await client.uploadDocument("services."+this.service._id+".invoice",docx);
+		this.documentExists = true;
+		this.editDocx();
+	}
+	
+	editDocx(){
 		this.editing = "services."+this.service._id+".invoice";
+		this.forceUpdate();
+	}
+	
+	async deleteDocx(){
+		await client.deleteDocument("services."+this.service._id+".invoice");
+		this.documentExists = false;
 		this.forceUpdate();
 	}
 	

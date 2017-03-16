@@ -119,12 +119,25 @@ class Client{
     }
 
 	async uploadDocument(id,data){
-        console.log(data)
 		await this.execute("/api/documents/"+id,{method:"PUT",body:data})
 	}
 
     async getDocument(id){
         return await this.getBlob("/api/documents/"+id);
+    }
+
+    async getDocumentExists(id){
+        try{
+            await this.execute("/api/documents/"+id,{method:"HEAD"});
+            return true;
+        }catch(e){
+            if(e.code == 404) return false;
+            throw e;
+        }
+    }
+
+    async deleteDocument(id){
+        await this.execute("/api/documents/"+id,{method:"DELETE"});
     }
 }
 module.exports = new Client();
