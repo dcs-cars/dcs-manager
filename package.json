@@ -10,8 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "babel-polyfill": "^6.13.0",
+    "blob-to-buffer": "^1.2.6",
     "bootstrap": "^3.3.5",
     "co-body": "^4.2.0",
+    "docxtemplater": "^3.0.6",
+    "docxtemplater-latest": "^0.7.10",
     "fs-extra": "^2.0.0",
     "jade2react": "github:vancoding/jade2react",
     "jszip": "^2.6.1",

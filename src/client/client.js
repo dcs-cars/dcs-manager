@@ -18,6 +18,11 @@ class Client{
 		};
 		return response;
 	}
+    async getBlob(url,opts){
+        var res = await this.getResponse(url,opts);
+        return await res.blob();
+    }
+
 	async getText(url,opts){
 		var res = await this.getResponse(url,opts);
 		return await res.text();
@@ -113,8 +118,13 @@ class Client{
         await this.execute("/api/rentals/"+rental,{method:"DELETE"});
     }
 
-	async uploadTemplate(id,data){
-		await this.execute("/api/templates/"+id,{method:"PUT",body:data})
+	async uploadDocument(id,data){
+        console.log(data)
+		await this.execute("/api/documents/"+id,{method:"PUT",body:data})
 	}
+
+    async getDocument(id){
+        return await this.getBlob("/api/documents/"+id);
+    }
 }
 module.exports = new Client();

@@ -87,7 +87,7 @@
 					.btn.btn-default(onClick=this.renderTemplate.bind(this)) Generieren
 					.btn.btn-primary(onClick=this.save.bind(this)) Speichern
 	if this.editing
-		Editor(url=this.editing title="Document.docx" onClose=this.stopEditing.bind(this))
+		Editor(document=this.editing onClose=this.stopEditing.bind(this))
 script(section="body").
 	constructor(p,c){
 		super(p,c);
@@ -148,8 +148,45 @@ script(section="body").
 		}
 	}
 	
-	renderTemplate(){
-		this.editing = "http://192.168.1.37/api/templates/service_invoice/"+this.service._id+"?username=dcs&password=1234";		
+	async renderTemplate(){
+		var service = this.service;
+		var data = {
+			receiver:service.tenantName+"\r\n"+service.tenantAddress.split("\n").join("\r\n"),
+			date: moment().format("L"),
+			totalBeforeTax:money.format(service.totalBeforeTax),
+			taxAmount:money.format(service.taxAmount),
+			total:money.format(service.total),
+			services:service.services.map(s=>({
+				name:s.description,
+				count:money.format(Math.round(s.count*100)+""),
+				rate:money.format(s.rate+""),
+				total:money.format(s.total+"")
+			}))
+		};	
+
+		var docx = await client.getDocument("service_invoice");
+		console.log(docx);
+		docx = await new Promise((s,e)=>{
+			var reader = new FileReader();
+			reader.onload = function(){
+				s(reader.result);
+			}
+			reader.readAsArrayBuffer(docx);
+		});
+		
+		console.log(docx)
+		
+		docx = new Zip(docx);
+		console.log("done",docx)
+
+		var template = new Template();
+		template.load(docx);
+		template.setData(data);
+		template.render();
+		console.log(template.getZip())
+		docx = template.getZip().generate({type:"blob"});
+		await client.uploadDocument("services."+this.service._id+".invoice",docx);
+		this.editing = "services."+this.service._id+".invoice";
 		this.forceUpdate();
 	}
 	
@@ -174,3 +211,7 @@ script.
 	var money = require("../shared/money");
 	var calculateService = require("../shared/calculateService");
 	var Editor = require("./editor");
+	var Template = require("../api/services/node_modules/docxtemplater");
+	var money = require("../shared/money.js");
+	var toBuffer = require("blob-to-buffer");
+	var Zip = require("jszip");

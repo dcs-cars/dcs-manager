@@ -1,5 +1,6 @@
 var router = require("koa-router")();
 
 module.exports = router
-	.post("/save",require("./save"))
+	.get("/:document",require("./get"))
+	.put("/:document",require("./put"))
 	.middleware()
