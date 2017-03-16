@@ -12,7 +12,7 @@ script(section="body").
 		        "fileType": "docx",
 		        "key": new Date().getTime()+"",
 		        "title": this.props.document,
-		        "url": "http://cloudstudios.ch:2000/api/documents/"+this.props.document+"?username=dcs&password=1234",
+		        "url": location.origin+"/api/documents/"+this.props.document+"?username=dcs&password=1234",
 				"permissions":{
 					"allow-scripts":true
 				}
