@@ -6,5 +6,8 @@ module.exports = compose([
 	mount("/rentals",require("./rentals")),
 	mount("/sales",require("./sales")),
 	mount("/services",require("./services")),
-	mount("/documents",require("./documents"))
+	mount("/documents",require("./documents")),
+	router().get("/password",async function(c){
+		c.body = c.config.password;
+	}).middleware()
 ]);

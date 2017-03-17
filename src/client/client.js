@@ -51,6 +51,10 @@ class Client{
 		return await this.getJson("/api/sales?"+params.toString());
 	}
 
+	async getPassword(){
+		return await this.getText("/api/password");
+	}
+
 	async createSale(data){
 		return await this.getText("/api/sales",{method:"POST",jsonBody:data})
 	}

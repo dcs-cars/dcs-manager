@@ -32,6 +32,7 @@ app.use(async (ctx, next) => {
 // require auth
 app.use(mount("/public",files("./public")));
 app.use(async function(ctx,next){
+	ctx.config = config;
 	ctx.db = con;
 	await next();
 });

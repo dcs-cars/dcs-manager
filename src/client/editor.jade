@@ -5,14 +5,14 @@ div(style="position:fixed;top:0px;left:0px;bottom:0px;right:0px;background:rgba(
 	div(style="position:absolute;top:60px;left:10px;bottom:10px;right:10px")
 		#document-editor
 script(section="body").
-	componentDidMount(){
-		console.log("url","http://cloudstudios.ch:2000/api/documents/"+this.props.document)
+	async componentDidMount(){
+		var password = await client.getPassword();
 		this.editor = new DocsAPI.DocEditor("document-editor", {
 		    "document": {
 		        "fileType": "docx",
 		        "key": new Date().getTime()+"",
 		        "title": this.props.document,
-		        "url": location.origin+"/api/documents/"+this.props.document+"?username=dcs&password=1234",
+		        "url": location.origin+"/api/documents/"+this.props.document+"?username=dcs&password="+password,
 				"permissions":{
 					"allow-scripts":true
 				}
@@ -32,8 +32,9 @@ script(section="body").
 	}
 	save(){
 		this.editor.downloadAs();
-	}
-	
+	}	
 	close(){		
 		this.props.onClose();
 	}
+script.
+	var client = require("./client");
